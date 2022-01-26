@@ -1,0 +1,4 @@
+(test
+ (name ppx_seq)
+ (libraries ppx_seq)
+ (preprocess (pps ppx_seq)))
