@@ -1,0 +1,5 @@
+Note to future contributors: this project aims to hit maintenance mode as soon
+as possible. So bug fixes and corner cases are more easily merged, and merging
+new features will heavily err on the conservative side.
+
+That's all.

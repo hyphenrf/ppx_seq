@@ -1,0 +1,12 @@
+ppx_seq
+-------
+
+simple unintrusive ppx rewriter that provides easy-to-construct sequence syntax
+
+this rewriter aims to facilitate the use of Seq module, especially after the
+excellent additions to it starting from OCaml 4.14
+
+example:
+  [%seq 1; 2; 3] => fun()->Cons(1, fun()->Cons(2, fun()->Cons(3, fun()->Nil)))
+  [%seq.empty] => fun()->Nil
+
