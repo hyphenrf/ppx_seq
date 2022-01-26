@@ -5,6 +5,7 @@
 (maintainers hyphens@pm.me)
 
 (name ppx_seq)
+(version 0.1.1)
 (license ISC)
 (source (github hyphenrf/ppx_seq))
 
