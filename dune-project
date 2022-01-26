@@ -5,7 +5,6 @@
 (maintainers hyphens@pm.me)
 
 (name ppx_seq)
-(version 0.1)
 (license ISC)
 (source (github hyphenrf/ppx_seq))
 
@@ -14,5 +13,4 @@
  (depends
   (ppxlib (>= 0.24.0)))
  (tags (syntax))
- (synopsis "Simple unintrusive ppx rewriter that offers Seq literals")
- (description "Simple unintrusive ppx rewriter that offers Seq literals"))
+ (synopsis "Simple unintrusive ppx rewriter that offers Seq literals"))
