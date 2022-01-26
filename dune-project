@@ -11,6 +11,7 @@
 (package
  (name ppx_seq)
  (depends
-  (ppxlib (>= 0.24.0)))
+  (ppxlib (>= 0.24.0))
+  (ocaml (>= 4.07.0)))
  (tags (syntax))
  (synopsis "Simple unintrusive ppx rewriter that offers Seq literals"))
