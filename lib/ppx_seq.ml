@@ -5,6 +5,7 @@ open Ppxlib
 let rec eseq ~loc = function
   | [] -> [%expr fun () -> Seq.Nil]
   | x :: xs -> [%expr fun () -> Seq.Cons([%e x], [%e eseq ~loc xs])]
+[@@tail_mod_cons]
 
 let expand ~ctxt exprs =
   eseq exprs
@@ -20,7 +21,7 @@ let extend_seq = Extension.V3.declare "seq"
 let extend_nil = Extension.V3.declare "seq.empty"
   Extension.Context.expression
   Ast_pattern.__
-  (fun ~ctxt _ -> expand ~ctxt []) 
+  (fun ~ctxt _ -> expand ~ctxt [])
 
 let rules = [
   Context_free.Rule.extension extend_seq;

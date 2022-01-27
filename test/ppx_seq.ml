@@ -5,3 +5,10 @@ let tests = ((* BEGIN TESTS *))
 
   (* Just a Nil thunk, equivalent to Seq.empty *)
   ; assert begin List.of_seq [%seq.empty] = [] end
+
+  (* Evaluation is properly delayed *)
+  ; assert begin
+      let r = ref 42 in
+      let _ = [%seq r := 0] in
+         !r = 42
+    end
