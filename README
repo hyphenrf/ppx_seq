@@ -6,7 +6,27 @@ simple unintrusive ppx rewriter that provides easy-to-construct sequence syntax
 this rewriter aims to facilitate the use of Seq module, especially after the
 excellent additions to it starting from OCaml 4.14
 
-example:
-  [%seq 1; 2; 3] => fun()->Cons(1, fun()->Cons(2, fun()->Cons(3, fun()->Nil)))
-  [%seq.empty] => fun()->Nil
+
+usage:
+
+seq literals which can be used in any expression
+
+  [%seq 1; 2; 3] => - : int Seq.t = <fun>
+  [%seq.empty] => - : 'a Seq.t = <fun>
+
+play around with the rewriter in your favourite toplevel like so
+
+  $ ocaml $(ocamlfind printppx ppx_seq) [options...] # without project
+  # #use_output "dune top" # within a project that depends on ppx_seq
+
+ocamlfind is only used for convenience, so you can use ppx directly.. e.g.
+  -ppx '/usr/lib/ppx_seq/ppx.exe -as-ppx'
+without depending on ocamlfind.
+
+and of course, you can depend on it as a rewriter by adding the following to
+your dune file
+  (executable/library/test...
+   ...
+   (preprocess (pps ppx_seq)))
+..or using ocamlfind, or directly, as both explained above
 

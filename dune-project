@@ -15,4 +15,6 @@
   (ppxlib (>= 0.24.0))
   (ocaml (>= 4.07.0)))
  (tags (syntax))
- (synopsis "Simple unintrusive ppx rewriter that offers Seq literals"))
+ (synopsis "Seq literals ppx for OCaml")
+ (description "Simple unintrusive ppx rewriter that offers Seq literals.\n\
+               It offers List-like syntax in the form of [%seq a; b; c...]"))
