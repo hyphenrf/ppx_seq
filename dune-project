@@ -7,7 +7,10 @@
 (name ppx_seq)
 (version 0.1.1)
 (license ISC)
-(source (github hyphenrf/ppx_seq))
+(homepage https://sr.ht/~hyphens/ppx_seq)
+(source (uri git+https://git.sr.ht/~hyphens/ppx_seq))
+(bug_reports https://lists.sr.ht/~hyphens/ppx_seq)
+(documentation https://git.sr.ht/~hyphens/ppx_seq/tree/master/item/README)
 
 (package
  (name ppx_seq)
