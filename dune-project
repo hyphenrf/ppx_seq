@@ -5,7 +5,6 @@
 (maintainers hyphens@pm.me)
 
 (name ppx_seq)
-(version 0.1.1)
 (license ISC)
 (homepage https://sr.ht/~hyphens/ppx_seq)
 (source (uri git+https://git.sr.ht/~hyphens/ppx_seq))
@@ -15,8 +14,10 @@
 (package
  (name ppx_seq)
  (depends
-  (ppxlib (>= 0.24.0))
-  (ocaml (>= 4.07.0)))
+  (ppxlib (and (>= 0.23) :build))
+  (ocaml (>= 4.04.2))
+  (dune :build)
+  seq)
  (tags (syntax))
  (synopsis "Seq literals ppx for OCaml")
  (description "Simple unintrusive ppx rewriter that offers Seq literals.\n\
