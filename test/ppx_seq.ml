@@ -1,10 +1,15 @@
+(* [List.of_seq] only available for OCaml >= 4.07 *)
+let rec tolist xs = match xs () with
+  | Seq.Nil -> []
+  | Cons(x,xs) -> x :: tolist xs
+
 let tests = ((* BEGIN TESTS *))
 
   (* A sequence *)
-  ; assert begin List.of_seq [%seq 1;2;3] = [1;2;3] end
+  ; assert begin tolist [%seq 1;2;3] = [1;2;3] end
 
   (* Just a Nil thunk, equivalent to Seq.empty *)
-  ; assert begin List.of_seq [%seq.empty] = [] end
+  ; assert begin tolist [%seq.empty] = [] end
 
   (* Evaluation is properly delayed *)
   ; assert begin
