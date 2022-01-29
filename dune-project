@@ -14,9 +14,8 @@
 (package
  (name ppx_seq)
  (depends
-  (ppxlib (and (>= 0.23) :build))
+  (ppxlib (>= 0.23))
   (ocaml (>= 4.04.2))
-  (dune :build)
   (seq :with-test))
  (tags (syntax))
  (synopsis "Seq literals ppx for OCaml")
