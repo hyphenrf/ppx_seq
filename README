@@ -12,7 +12,10 @@ usage:
 seq literals which can be used in any expression
 
   [%seq 1; 2; 3] => - : int Seq.t = <fun>
-  [%seq.empty] => - : 'a Seq.t = <fun>
+  [%seq.empty]   => - : 'a Seq.t = <fun>
+
+  (* NOTE: side-effects are delayed in thunks *)
+  let x = ref 0 in ignore [%seq incr x]; !x => - : int = 0
 
 play around with the rewriter in your favourite toplevel like so
 
