@@ -17,7 +17,7 @@
   (ppxlib (and (>= 0.23) :build))
   (ocaml (>= 4.04.2))
   (dune :build)
-  seq)
+  (seq :with-test))
  (tags (syntax))
  (synopsis "Seq literals ppx for OCaml")
  (description "Simple unintrusive ppx rewriter that offers Seq literals.\n\
