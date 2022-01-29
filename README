@@ -17,10 +17,30 @@ seq literals which can be used in any expression
   (* NOTE: side-effects are delayed in thunks *)
   let x = ref 0 in ignore [%seq incr x]; !x => - : int = 0
 
+
+install:
+
+the package is provided in opam.ocaml.org, just issue the following
+
+  $ opam install ppx_seq
+
+you can also build it locally with dune
+
+  $ dune build
+  $ dune install
+
 play around with the rewriter in your favourite toplevel like so
 
-  $ ocaml $(ocamlfind printppx ppx_seq) [options...] # without project
-  # #use_output "dune top" # within a project that depends on ppx_seq
+  # without project
+  $ ocaml $(ocamlfind printppx ppx_seq) [options...]
+  # or
+  $ ocaml -ppx 'ocamlfind ppx_seq/ppx.exe -as-ppx' [options...]
+
+  (* or, in a toplevel and with ocamlfind *)
+  # #require "ppx_seq"
+
+  (* within a project that depends on ppx_seq *)
+  # #use_output "dune top"
 
 ocamlfind is only used for convenience, so you can use ppx directly.. e.g.
   -ppx '/usr/lib/ppx_seq/ppx.exe -as-ppx'
