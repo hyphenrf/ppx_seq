@@ -14,8 +14,14 @@ seq literals which can be used in any expression
   [%seq 1; 2; 3] => - : int Seq.t = <fun>
   [%seq.empty]   => - : 'a Seq.t = <fun>
 
-  (* NOTE: side-effects are delayed in thunks *)
+  (* side-effects are delayed in plain thunks *)
   let x = ref 0 in ignore [%seq incr x]; !x => - : int = 0
+
+  (* [[%seq ...]] iterators are just a normal [Seq] structure,
+     which means it inherits all of its usual behaviour. *)
+  let x = ref 0 in
+  let s = [%seq incr x] in
+  Seq.iter ignore s; Seq.iter ignore s; !x => - : int = 2
 
 
 install:
