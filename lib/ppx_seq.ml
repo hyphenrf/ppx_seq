@@ -20,8 +20,8 @@ let extend_seq = Extension.V3.declare "seq"
 
 let extend_nil = Extension.V3.declare "seq.empty"
   Extension.Context.expression
-  Ast_pattern.__
-  (fun ~ctxt _ -> expand ~ctxt [])
+  Ast_pattern.(pstr nil)
+  (fun ~ctxt -> expand ~ctxt [])
 
 let rules = [
   Context_free.Rule.extension extend_seq;
