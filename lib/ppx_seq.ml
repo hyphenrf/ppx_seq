@@ -7,21 +7,19 @@ let rec eseq ~loc = function
   | x :: xs -> [%expr fun () -> Seq.Cons([%e x], [%e eseq ~loc xs])]
 [@@tail_mod_cons]
 
-let expand ~ctxt exprs =
-  eseq exprs
-    ~loc:(Expansion_context.Extension.extension_point_loc ctxt)
+let expand ~loc ~path:_ = eseq ~loc
 
-let extend_seq = Extension.V3.declare "seq"
+let extend_seq = Extension.V2.declare "seq"
   Extension.Context.expression
   Ast_pattern.(
     single_expr_payload (esequence __)
   )
   expand
 
-let extend_nil = Extension.V3.declare "seq.empty"
+let extend_nil = Extension.V2.declare "seq.empty"
   Extension.Context.expression
   Ast_pattern.(pstr nil)
-  (fun ~ctxt -> expand ~ctxt [])
+  (expand [])
 
 let rules = [
   Context_free.Rule.extension extend_seq;
