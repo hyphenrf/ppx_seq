@@ -20,8 +20,11 @@ let einf ~loc a b =
     [%expr let rec gen x s () = Seq.Cons(x, gen (x + s) s) in [%e body]]
   in
   match a with
-  | None -> mkgen [%expr gen [%e b] (succ [%e b] - [%e b]) ]
-  | Some a -> mkgen [%expr gen [%e a] ([%e b] - [%e a]) ]
+  | None ->
+    mkgen [%expr let x = [%e b] in gen x (succ x - x) ]
+  | Some a ->
+    mkgen [%expr let x = [%e a]
+                 and y = [%e b] in gen x (y - x) ]
 
 let extend_inf = Extension.V2.declare "seq.inf"
   Extension.Context.expression
