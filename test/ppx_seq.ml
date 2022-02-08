@@ -9,7 +9,7 @@ let tests = ((* BEGIN TESTS *))
   ; assert begin tolist [%seq 1;2;3] = [1;2;3] end
 
   (* Just a Nil thunk, equivalent to Seq.empty *)
-  ; assert begin tolist [%seq.empty] = [] end
+  ; assert begin tolist [%seq] = [] end
 
   (* Evaluation is properly delayed *)
   ; assert begin
