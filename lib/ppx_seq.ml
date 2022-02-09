@@ -34,9 +34,39 @@ let extend_inf = Extension.V2.declare "seq.inf"
   )
   (fun ~loc ~path:_ -> einf ~loc)
 
+let efin ~loc a b c =
+  let mkgen body = [%expr
+    let rec gen x s y () = let n = x + s in
+     if compare x y = compare n x then Seq.Nil else Seq.Cons(x, gen n s y)
+    in [%e body]
+  ]
+  in
+  match a with
+  | None ->
+    mkgen [%expr
+      let x = [%e b] and y = [%e c] in
+      if compare x y = 0 then Seq.return x else
+      gen x (if compare x y < 0 then succ x - x else x - succ x) y
+    ]
+  | Some a ->
+    mkgen [%expr
+      let x = [%e a] and v = [%e b] and y = [%e c] in
+      if compare x y = 0 then Seq.return x else
+      if compare x v = 0 then Seq.empty else
+      gen x (v - x) y
+    ]
+let extend_fin = Extension.V2.declare "seq.fin"
+  Extension.Context.expression
+  Ast_pattern.(pstr @@ alt_option
+    (pstr_eval (pexp_tuple (__ ^:: __ ^:: __ ^:: nil)) nil ^:: nil)
+    (pstr_eval (pexp_tuple (__ ^:: __ ^:: nil)) nil ^:: nil)
+  )
+  (fun ~loc ~path:_ -> efin ~loc)
+
 let rules = List.map Context_free.Rule.extension [
   extend_seq;
   extend_inf;
+  extend_fin;
 ]
 
 let _ = Driver.register_transformation
