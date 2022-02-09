@@ -34,3 +34,18 @@ let tests = ((* BEGIN TESTS *))
   ; assert begin tolist @@ take 3 [%seq.inf 1, 1] = [1;1;1] end (* n = 0 *)
   ; assert begin tolist @@ take 3 [%seq.inf 5, 3] = [5;3;1] end (* n < 0 *)
 
+  (* Finite Ranges *)
+
+  ; assert begin tolist [%seq.fin 1, 3] = [1;2;3] end (* a < b *)
+  ; assert begin tolist [%seq.fin 1, 1] = [1]     end (* a = b *)
+  ; assert begin tolist [%seq.fin 3, 1] = [3;2;1] end (* a > b *)
+
+  ; assert begin tolist [%seq.fin 2, 4, 7] = [2;4;6] end
+  ; assert begin tolist [%seq.fin 1, 3, 7] = [1;3;5;7] end
+  ; assert begin tolist [%seq.fin 7, 5, 1] = [7;5;3;1] end
+
+  ; assert begin tolist [%seq.fin 2,5,3] = [2] end
+  ; assert begin tolist [%seq.fin 5,2,3] = [5] end
+
+  ; assert begin tolist [%seq.fin 2,5,5] = [2;5] end
+  ; assert begin tolist [%seq.fin 5,2,2] = [5;2] end
