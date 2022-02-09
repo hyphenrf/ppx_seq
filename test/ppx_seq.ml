@@ -35,10 +35,55 @@ let tests = ((* BEGIN TESTS *))
   ; assert begin tolist @@ take 3 [%seq.inf 5, 3] = [5;3;1] end (* n < 0 *)
 
   (* Finite Ranges *)
+  (* NOTE:
+     Unlike Haskell, finite ranges are always finite.
+     That is, as long as [compare], [+], [-], [succ] are defined in local scope in a sane way.
+     With that, any fin expression that could possibly produce an inf sequence is empty seq *)
 
+  (* [a..b] *)
   ; assert begin tolist [%seq.fin 1, 3] = [1;2;3] end (* a < b *)
   ; assert begin tolist [%seq.fin 1, 1] = [1]     end (* a = b *)
   ; assert begin tolist [%seq.fin 3, 1] = [3;2;1] end (* a > b *)
+
+  (* [a, a+n..b] *)
+  (* a = b *)
+  ; assert begin tolist [%seq.fin 1, 2, 1] = [1] end
+  ; assert begin tolist [%seq.fin 1, 1, 1] = [1] end
+  ; assert begin tolist [%seq.fin 1, 0, 1] = [1] end
+  (* a > b *)
+  ; assert begin tolist [%seq.fin 2, 3, 1] = [] end
+  ; assert begin tolist [%seq.fin 2, 2, 1] = [] end
+  ; assert begin tolist [%seq.fin 2, 1, 1] = [2;1] end
+  (* a < b *)
+  ; assert begin tolist [%seq.fin 1, 2, 2] = [1;2] end
+  ; assert begin tolist [%seq.fin 1, 1, 2] = [] end
+  ; assert begin tolist [%seq.fin 1, 0, 2] = [] end
+
+  (* Range Effects *)
+  (* NOTE: unlike [[%seq ...]] literals, range evaluation is eager *)
+  (* TODO: is there a way to make it lazy? *)
+
+  ; begin
+      let module E =
+        struct
+          let succ () = ()
+          let (+) () () = ()
+          let (-) () () = ()
+          let compare () () = 0
+        end
+      in
+      let r = ref 0 in
+      ignore E.(([%seq.inf incr r] : unit Seq.t)); (* TODO: fix typing for warning 5 *)
+        assert (!r = 1);
+      ignore E.(([%seq.inf incr r, incr r] : unit Seq.t));
+        assert (!r = 3);
+      ignore E.(([%seq.fin incr r, incr r] : unit Seq.t));
+        assert (!r = 5);
+      ignore E.(([%seq.fin incr r, incr r, incr r] : unit Seq.t));
+        assert (!r = 8);
+    end
+
+  (* Misc Finite Ranges *)
 
   ; assert begin tolist [%seq.fin 2, 4, 7] = [2;4;6] end
   ; assert begin tolist [%seq.fin 1, 3, 7] = [1;3;5;7] end
