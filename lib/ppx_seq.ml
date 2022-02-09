@@ -13,7 +13,7 @@ let extend_seq = Extension.V2.declare "seq"
     (pstr_eval (esequence __) nil ^:: nil)
     nil
   )
-  (fun ~loc ~path:_ xs -> eseq ~loc @@ Option.value ~default:[] xs)
+  (fun ~loc ~path:_ xs -> eseq ~loc @@ match xs with None -> [] | Some xs -> xs)
 
 let einf ~loc a b =
   let mkgen body =
