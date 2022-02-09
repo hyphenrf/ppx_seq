@@ -17,14 +17,13 @@ let extend_seq = Extension.V2.declare "seq"
 
 let einf ~loc a b =
   let mkgen body =
-    [%expr let rec gen x s () = Seq.Cons(x, gen (x + s) s) in [%e body]]
+    [%expr let rec inf x s () = Seq.Cons(x, inf (x + s) s) in [%e body]]
   in
   match a with
   | None ->
-    mkgen [%expr let x = [%e b] in gen x (succ x - x) ]
+    mkgen [%expr let x = [%e b] in inf x (succ x - x) ]
   | Some a ->
-    mkgen [%expr let x = [%e a]
-                 and y = [%e b] in gen x (y - x) ]
+    mkgen [%expr let x = [%e a] and y = [%e b] in inf x (y - x) ]
 
 let extend_inf = Extension.V2.declare "seq.inf"
   Extension.Context.expression
@@ -36,8 +35,8 @@ let extend_inf = Extension.V2.declare "seq.inf"
 
 let efin ~loc a b c =
   let mkgen body = [%expr
-    let rec gen x s y () = let n = x + s in
-     if compare x y = compare n x then Seq.Nil else Seq.Cons(x, gen n s y)
+    let rec fin x s y () = let n = x + s in
+     if compare x y = compare n x then Seq.Nil else Seq.Cons(x, fin n s y)
     in [%e body]
   ]
   in
@@ -46,14 +45,14 @@ let efin ~loc a b c =
     mkgen [%expr
       let x = [%e b] and y = [%e c] in
       if compare x y = 0 then Seq.return x else
-      gen x (if compare x y < 0 then succ x - x else x - succ x) y
+      fin x (if compare x y < 0 then succ x - x else x - succ x) y
     ]
   | Some a ->
     mkgen [%expr
       let x = [%e a] and v = [%e b] and y = [%e c] in
       if compare x y = 0 then Seq.return x else
       if compare x v = 0 then Seq.empty else
-      gen x (v - x) y
+      fin x (v - x) y
     ]
 let extend_fin = Extension.V2.declare "seq.fin"
   Extension.Context.expression
