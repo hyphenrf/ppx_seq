@@ -15,7 +15,7 @@ let extend_seq = Extension.V2.declare "seq"
   )
   (fun ~loc ~path:_ xs -> eseq ~loc @@ match xs with None -> [] | Some xs -> xs)
 
-let einf ~loc a b =
+let einf ~loc ~path:_ a b =
   let mkgen body =
     [%expr let rec inf x s () = Seq.Cons(x, inf (x + s) s) in [%e body]]
   in
@@ -31,9 +31,9 @@ let extend_inf = Extension.V2.declare "seq.inf"
     (pstr_eval (pexp_tuple (__ ^:: __ ^:: nil)) nil ^:: nil)
     (pstr_eval __ nil ^:: nil)
   )
-  (fun ~loc ~path:_ -> einf ~loc)
+  einf
 
-let efin ~loc a b c =
+let efin ~loc ~path:_ a b c =
   let mkgen body = [%expr
     let rec fin x s y () = let n = x + s in
      if compare x y = compare n x then Seq.Nil else Seq.Cons(x, fin n s y)
@@ -54,13 +54,14 @@ let efin ~loc a b c =
       if compare x v = 0 then Seq.empty else
       fin x (v - x) y
     ]
+
 let extend_fin = Extension.V2.declare "seq.fin"
   Extension.Context.expression
   Ast_pattern.(pstr @@ alt_option
     (pstr_eval (pexp_tuple (__ ^:: __ ^:: __ ^:: nil)) nil ^:: nil)
     (pstr_eval (pexp_tuple (__ ^:: __ ^:: nil)) nil ^:: nil)
   )
-  (fun ~loc ~path:_ -> efin ~loc)
+  efin
 
 let rules = List.map Context_free.Rule.extension [
   extend_seq;
