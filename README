@@ -18,10 +18,16 @@ you can also build it locally with dune
   $ dune build
   $ dune install
 
+if you want to work on a dev version, you can use `opam pin` on this repository
+
+
+usage:
+
 play around with the rewriter in your favourite toplevel like so
 
-  # without project
+  # without project, in shell
   $ ocaml $(ocamlfind printppx ppx_seq) [options...]
+
   # or
   $ ocaml -ppx 'ocamlfind ppx_seq/ppx.exe -as-ppx' [options...]
 
@@ -31,14 +37,16 @@ play around with the rewriter in your favourite toplevel like so
   (* within a project that depends on ppx_seq *)
   # #use_output "dune top"
 
-ocamlfind is only used for convenience, so you can use ppx directly.. e.g.
-  -ppx '/usr/lib/ppx_seq/ppx.exe -as-ppx'
-without depending on ocamlfind.
+compile executables with the rewriter as a preprocessor like so
 
-and of course, you can depend on it as a rewriter by adding the following to
-your dune file
+  # a shortcut is provided when compiling, not invoking a toplevel
+  $ ocamlfind (c|opt) -package ppx_seq [options...]
+
+  # ocamlfind is only used for convenience, so you can use ppx directly.. e.g.
+  $ ocaml[c|opt] -ppx '..../lib/ppx_seq/ppx.exe -as-ppx' [options...]
+
+  ;; or in a dune file
   (executable/library/test...
    ...
    (preprocess (pps ppx_seq)))
-..or using ocamlfind, or directly, as both explained above
 
