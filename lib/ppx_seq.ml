@@ -21,9 +21,11 @@ let einf ~loc ~path:_ a b =
   in
   match a with
   | None ->
-    mkgen [%expr let x = [%e b] in inf x (succ x - x) ]
+    let body = mkgen [%expr inf x (succ x - x) ] in
+    [%expr let x = [%e b] in [%e body]]
   | Some a ->
-    mkgen [%expr let x = [%e a] and y = [%e b] in inf x (y - x) ]
+    let body = mkgen [%expr inf x (y - x) ] in
+    [%expr let x = [%e a] and y = [%e b] in [%e body]]
 
 let extend_inf = Extension.V2.declare "seq.inf"
   Extension.Context.expression
@@ -46,18 +48,20 @@ let efin ~loc ~path:_ a b c =
   in
   match a with
   | None ->
-    mkgen [%expr
-      let x = [%e b] and y = [%e c] in
+    let body = mkgen [%expr
       match compare x y with 0 -> Seq.return x | _ ->
       fin x (match compare x y with -1 -> succ x - x | _ -> x - succ x) y
     ]
+    in
+    [%expr let x = [%e b] and y = [%e c] in [%e body]]
   | Some a ->
-    mkgen [%expr
-      let x = [%e a] and v = [%e b] and y = [%e c] in
+    let body = mkgen [%expr
       (match compare x y with 0 -> Seq.return x | _ ->
       (match compare x v with 0 -> Seq.empty | _ ->
       fin x (v - x) y))
     ]
+    in
+    [%expr let x = [%e a] and v = [%e b] and y = [%e c] in [%e body]]
 
 let extend_fin = Extension.V2.declare "seq.fin"
   Extension.Context.expression

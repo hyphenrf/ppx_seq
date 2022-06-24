@@ -23,7 +23,7 @@ let tests = ((* BEGIN TESTS *))
       let _ = [%seq r := 0] in
          !r = 42
     end
-  
+
   (* BUG: due to the fact we're using pexp_sequence as a hack to sort of get a list-like syntax,
           [%seq (ignore 1; 1); 2] works as expected, but [%seq 1; (ignore 2; 2)] desugars to the
           same expression as [%seq 1; ignore 2; 2].
@@ -115,3 +115,12 @@ let tests = ((* BEGIN TESTS *))
 
   ; assert begin tolist [%seq.fin 2,5,5] = [2;5] end
   ; assert begin tolist [%seq.fin 5,2,2] = [5;2] end
+
+  (* Hygiene *)
+
+  ; assert begin
+      let fin = 1 in tolist [%seq.fin fin, fin+1] = [1;2]
+    end
+  ; assert begin
+      let inf = 1 in tolist @@ take 2 [%seq.inf inf] = [1;2]
+    end
