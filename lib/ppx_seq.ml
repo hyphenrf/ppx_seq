@@ -35,24 +35,28 @@ let extend_inf = Extension.V2.declare "seq.inf"
 
 let efin ~loc ~path:_ a b c =
   let mkgen body = [%expr
-    let rec fin x s y () = let n = x + s in
-     if compare x y = compare n x then Seq.Nil else Seq.Cons(x, fin n s y)
-    in [%e body]
+    let rec fin x s y () =
+      let n = x + s in
+      match compare x y, compare n x with
+      | 0, 0 | 1, 1 | -1, -1 -> Seq.Nil
+      | _ -> Seq.Cons(x, fin n s y)
+    in
+    [%e body]
   ]
   in
   match a with
   | None ->
     mkgen [%expr
       let x = [%e b] and y = [%e c] in
-      if compare x y = 0 then Seq.return x else
-      fin x (if compare x y < 0 then succ x - x else x - succ x) y
+      match compare x y with 0 -> Seq.return x | _ ->
+      fin x (match compare x y with -1 -> succ x - x | _ -> x - succ x) y
     ]
   | Some a ->
     mkgen [%expr
       let x = [%e a] and v = [%e b] and y = [%e c] in
-      if compare x y = 0 then Seq.return x else
-      if compare x v = 0 then Seq.empty else
-      fin x (v - x) y
+      (match compare x y with 0 -> Seq.return x | _ ->
+      (match compare x v with 0 -> Seq.empty | _ ->
+      fin x (v - x) y))
     ]
 
 let extend_fin = Extension.V2.declare "seq.fin"
