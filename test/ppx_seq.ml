@@ -113,3 +113,16 @@ let tests = ((* BEGIN TESTS *))
       in
       List.length (tolist s) = 2
     end
+  (* This is only relevant for the final element, but more sanity checks: *)
+  ; assert begin
+      let s =
+        [%seq (ignore 1; ignore 1); ignore 2]
+      in
+      List.length (tolist s) = 2
+    end
+  ; assert begin
+      let s =
+        [%seq ignore 1; (ignore 2; ignore 2); ignore 3]
+      in
+      List.length (tolist s) = 3
+    end
