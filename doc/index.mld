@@ -35,8 +35,8 @@ NOTE: an older syntax was also used to express the empty sequence:
 {[
   [%seq 1; 2; 3] => fun () -> Seq.Cons(1, fun () -> Seq.Cons(2, ...))
 ]}
-This is the original syntax that motivated the creation of [ppx_seq], every
-value in the sequence is properly delayed inside a thunk.
+Every value in the sequence is properly delayed inside a thunk.
+This is the original syntax that motivated the creation of [ppx_seq].
 
 
 
@@ -62,7 +62,7 @@ However, their payload is evaluated {i eagerly}. See: {!section:N}
 v}
 
 If you're familiar with Haskell, this range syntax follows closely its
-[enumFrom[Then|To][To]] sugar. As a reminder, that sugar has four forms:
+[enumFrom[Then[To]|To]] sugar. As a reminder, that sugar has four forms:
 - [[a,b..]] and its special form [[a..]]
 - [[a,b..c]] and its special form [[a..c]]
 
@@ -136,7 +136,7 @@ means they also do recomputations on traversal for side-effectful expressions.
 	  Seq.iter ignore s;
 	  !x
 	in
-	  a, b
+	a, b
 
   => - : int * int = (0, 2)
 ]}
@@ -145,16 +145,20 @@ Meanwhile, [[%seq.fin ...]] and [[%seq.inf ...]] {!section:R} are generated
 by evaluating their payload, so every subexpression in the payload will be
 evaluated one-per-range.
 {[
-  let r = ref 0 in
+  let r = ref 0                  in
   let s = [%seq.inf (incr r; 1)] in
-  let _ = s() in
-  let a = !r in
+  let a =
+    ignore (s());
+    ignore (s());
+    !r
+  in
   let _ = [%seq.inf (incr r; 1), (incr r; 2)] in
-  let b = !r in
-    a, b
+    a, !r
 
   => - : int * int = (1, 3)
 ]}
-Notice that we don't really "force/use" the second sequence anywhere up there.
+Notice that we force the head of the first sequence twice, but the incr effect
+is evaluated once. Notice also that we don't really force/use the second
+sequence anywhere up there.
 
 for more info or examples see the tests on [<ppx_seq_repo>/test/..].

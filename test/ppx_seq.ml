@@ -15,6 +15,8 @@ let tests = ((* BEGIN TESTS *))
   ; assert begin tolist [%seq 1;2;3] = [1;2;3] end
 
   (* Just a Nil thunk, equivalent to Seq.empty *)
+  (* TODO: fail with a meaningful error message on %seq.empty, and then remove
+     the note from the mld file *)
   ; assert begin tolist [%seq] = [] end
 
   (* Evaluation is properly delayed *)
