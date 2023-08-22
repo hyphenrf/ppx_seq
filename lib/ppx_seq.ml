@@ -1,16 +1,45 @@
 open Ppxlib
 
-(* [eseq] function is somewhat similar to [elist] but constructs a sequence.
-   It is not provided by the Ast_builder. *)
+(*
+  [eseq] function is somewhat similar to [elist] but constructs a sequence.
+  It is not provided by the [Ast_builder].
+  [Ast_builder.Default.esequence] is a plain semicolon sequence
+*)
 let rec eseq ~loc = function
   | [] -> [%expr fun () -> Seq.Nil]
   | x :: xs -> [%expr fun () -> Seq.Cons([%e x], [%e eseq ~loc xs])]
 [@@tail_mod_cons]
 
+(*
+  XXX (#5):
+  between (a; b; c) and (a; (b; c)) there is one important difference:
+  the subexpr b; c has a nonempty pexp_loc_stack when parenthesised.
+  
+  This seems like a huge hack at first glance, but perhaps it really is fine.
+  one way to find out :)
+  
+  Well, there is another way, study the cases when said loc_stack is pushed, and
+  ensure there is no way for it to ever indicate the wrong thing for this
+  use-case.
+*)
+let rec extract_seq expr sel = match expr with
+  | { pexp_desc = Pexp_sequence (x, xs); pexp_loc_stack = []; _ } ->
+    sel x :: extract_seq xs sel
+  | e -> [sel e]
+[@@tail_mod_cons]
+
+let elistlike (patt : (expression, 'a -> 'a, 'b) Ast_pattern.t)
+  : (expression, 'b list -> 'c, 'c) Ast_pattern.t
+  =
+  let open Ast_pattern in
+  let patt ctx expr = to_func patt ctx expr.pexp_loc expr Fun.id in
+  let func ctx _loc expr k = k (extract_seq expr (patt ctx)) in
+  of_func func
+
 let extend_seq = Extension.V2.declare "seq"
   Extension.Context.expression
   Ast_pattern.(pstr @@ alt_option
-    (pstr_eval (esequence __) nil ^:: nil)
+    (pstr_eval (elistlike __) nil ^:: nil)
     nil
   )
   (fun ~loc ~path:_ xs -> eseq ~loc @@ match xs with None -> [] | Some xs -> xs)

@@ -24,25 +24,6 @@ let tests = ((* BEGIN TESTS *))
          !r = 42
     end
 
-  (* BUG: due to the fact we're using pexp_sequence as a hack to sort of get a list-like syntax,
-          [%seq (ignore 1; 1); 2] works as expected, but [%seq 1; (ignore 2; 2)] desugars to the
-          same expression as [%seq 1; ignore 2; 2].
-
-          It appears that there's no way to tell, really, from the parsetree, which is which, as
-          parens don't make it there by convention.
-
-          to give up on the nice [%seq a; b; c] syntax seems to be the only way to resolve this.
-          To my knowledge, we can't even give users meaningful error messages on why right-
-          associative parens are the only ones that don't work.
-
-          The current workaround for [%seq 1; (ignore 2; 2)] is [%seq 1; let _ = ignore 2 in 2]
-          and similar kinds of solutions that avoid a sequence-in-parens.
-
-          Moving forward, we have to decide whether we want to keep the syntax or fix the problem.
-          to fix the problem, we can either say [%seq a, b, c] or [%seq [a; b; c]], both are quite
-          unfortunate.
-  *)
-
   (* Infinite Ranges *)
 
   (* [a, succ a..] *)
@@ -116,11 +97,19 @@ let tests = ((* BEGIN TESTS *))
   ; assert begin tolist [%seq.fin 2,5,5] = [2;5] end
   ; assert begin tolist [%seq.fin 5,2,2] = [5;2] end
 
-  (* Hygiene *)
+  (* Hygiene (#7) *)
 
   ; assert begin
       let fin = 1 in tolist [%seq.fin fin, fin+1] = [1;2]
     end
   ; assert begin
       let inf = 1 in tolist @@ take 2 [%seq.inf inf] = [1;2]
+    end
+
+  (* Semicolon sequences in parens are treated as a single element (#5) *)
+  ; assert begin
+      let s =
+        [%seq ignore 1; (ignore 2; ignore 2)]
+      in
+      List.length (tolist s) = 2
     end
