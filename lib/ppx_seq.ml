@@ -10,6 +10,10 @@ let rec eseq ~loc = function
   | x :: xs -> [%expr fun () -> Seq.Cons([%e x], [%e eseq ~loc xs])]
 [@@tail_mod_cons]
 
+let eseq ~loc ~path:_ xs =
+  let xs = match xs with None -> [] | Some xs -> xs in
+  [%expr ([%e eseq ~loc xs] : _ Seq.t)]
+
 (*
   XXX (#5):
   between (a; b; c) and (a; (b; c)) there is one important difference:
@@ -42,11 +46,13 @@ let extend_seq = Extension.V2.declare "seq"
     (pstr_eval (elistlike __) nil ^:: nil)
     nil
   )
-  (fun ~loc ~path:_ xs -> eseq ~loc @@ match xs with None -> [] | Some xs -> xs)
+  eseq
 
 let einf ~loc ~path:_ a b =
-  let mkgen body =
-    [%expr let rec inf x s () = Seq.Cons(x, inf (x + s) s) in [%e body]]
+  let mkgen body = [%expr
+    let rec inf x s () = Seq.Cons(x, inf (x + s) s) in
+    ([%e body] : _ Seq.t)
+  ]
   in
   match a with
   | None ->
@@ -72,7 +78,7 @@ let efin ~loc ~path:_ a b c =
       | 0, 0 | 1, 1 | -1, -1 -> Seq.Nil
       | _ -> Seq.Cons(x, fin n s y)
     in
-    [%e body]
+    ([%e body] : _ Seq.t)
   ]
   in
   match a with

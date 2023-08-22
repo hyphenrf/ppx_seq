@@ -76,14 +76,15 @@ let tests = ((* BEGIN TESTS *))
           let compare () () = 0
         end
       in
+      let open E in
       let r = ref 0 in
-      ignore E.(([%seq.inf incr r] : unit Seq.t)); (* TODO: fix typing for warning 5 *)
+      ignore [%seq.inf incr r];
         assert (!r = 1);
-      ignore E.(([%seq.inf incr r, incr r] : unit Seq.t));
+      ignore [%seq.inf incr r, incr r];
         assert (!r = 3);
-      ignore E.(([%seq.fin incr r, incr r] : unit Seq.t));
+      ignore [%seq.fin incr r, incr r];
         assert (!r = 5);
-      ignore E.(([%seq.fin incr r, incr r, incr r] : unit Seq.t));
+      ignore [%seq.fin incr r, incr r, incr r];
         assert (!r = 8);
     end
 
